@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'app/router.dart';
 import 'app/theme/theme.dart';
 
 void main() {
-  runApp(const BoibrittoApp());
+  runApp(
+    const ProviderScope(
+      child: BoibrittoApp(),
+    ),
+  );
 }
 
 class BoibrittoApp extends StatelessWidget {
