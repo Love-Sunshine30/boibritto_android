@@ -6,25 +6,25 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import 'tables/books_table.dart';
+import 'tables/requests_table.dart';
 
 part 'app_database.g.dart';
 
-@DriftDatabase(tables: [Books])
+@DriftDatabase(tables: [Books, Requests])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
         onCreate: (m) => m.createAll(),
         onUpgrade: (m, from, to) async {
-          if (from < 2) {
-            await m.createTable(books);
-          }
+          if (from < 2) await m.createTable(books);
+          if (from < 3) await m.createTable(requests);
         },
       );
 

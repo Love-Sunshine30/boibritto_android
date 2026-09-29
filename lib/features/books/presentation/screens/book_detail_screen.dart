@@ -5,17 +5,58 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../app/router/routes.dart';
 import '../../../../app/theme/app_spacing.dart';
+import '../../../../core/widgets/status_pill.dart';
 import '../../../profile/application/own_profile_controller.dart';
+import '../../../requests/application/request_to_borrow_controller.dart';
 import '../../application/book_detail_controller.dart';
 
 class BookDetailScreen extends ConsumerWidget {
   const BookDetailScreen({super.key, required this.bookId});
   final int bookId;
 
+  Future<void> _requestToBorrow(BuildContext context, WidgetRef ref) async {
+    final messageController = TextEditingController();
+    final send = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Request to borrow'),
+        content: TextField(
+          controller: messageController,
+          maxLength: 500,
+          maxLines: 3,
+          decoration: const InputDecoration(hintText: 'Optional message to the owner'),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Send')),
+        ],
+      ),
+    );
+    if (send != true || !context.mounted) return;
+
+    final request = await ref
+        .read(requestToBorrowControllerProvider.notifier)
+        .submit(bookId, message: messageController.text.trim());
+
+    if (!context.mounted) return;
+    if (request != null) {
+      context.push(AppRoutes.requestDetail(request.id));
+    } else {
+      final message = ref.read(requestToBorrowControllerProvider).errorMessage;
+      if (message != null) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bookAsync = ref.watch(bookDetailControllerProvider(bookId));
-    final ownProfile = ref.watch(ownProfileControllerProvider).asData?.value;
+    final ownProfile = ref.watch(ownProfileControllerProvider).maybeWhen(
+      data: (profile) => profile,
+      orElse: () => null,
+    );
+    final requestState = ref.watch(requestToBorrowControllerProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Book')),
@@ -46,7 +87,10 @@ class BookDetailScreen extends ConsumerWidget {
                 const SizedBox(height: AppSpacing.md),
                 Text(book.description),
                 const SizedBox(height: AppSpacing.md),
-                Text(book.available ? 'Available' : 'Currently on loan'),
+                StatusPill(
+                  label: book.available ? 'Available' : 'On loan',
+                  tone: book.available ? StatusTone.accepted : StatusTone.returned,
+                ),
                 const SizedBox(height: AppSpacing.md),
                 Text('Listed by ${book.ownerName}'),
                 const SizedBox(height: AppSpacing.xl),
@@ -56,9 +100,16 @@ class BookDetailScreen extends ConsumerWidget {
                     child: const Text('Edit listing'),
                   )
                 else if (book.available)
-                  const FilledButton(
-                    onPressed: null, // wired up in step 5 (POST /books/{id}/requests)
-                    child: Text('Request to borrow (coming soon)'),
+                  FilledButton(
+                    onPressed:
+                        requestState.submitting ? null : () => _requestToBorrow(context, ref),
+                    child: requestState.submitting
+                        ? const SizedBox(
+                            height: 18,
+                            width: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Text('Request to borrow'),
                   ),
               ],
             ),

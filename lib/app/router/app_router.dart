@@ -16,6 +16,8 @@ import '../../features/books/presentation/screens/my_shelf_screen.dart';
 import '../../features/profile/application/own_profile_controller.dart';
 import '../../features/profile/data/models/own_profile.dart';
 import '../../features/profile/presentation/screens/my_profile_screen.dart';
+import '../../features/requests/presentation/screens/request_detail_screen.dart';
+import '../../features/requests/presentation/screens/requests_screen.dart';
 import 'routes.dart';
 
 class AppRefreshNotifier extends ChangeNotifier {
@@ -85,7 +87,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             if (loc == AppRoutes.splash || onAuthScreen || loc == AppRoutes.newBook) {
               return AppRoutes.completeProfile;
             }
-            return null; // browsing elsewhere is allowed while incomplete
+            return null;
           }
           if (loc == AppRoutes.splash || onAuthScreen || onCompleteProfile) {
             return AppRoutes.books;
@@ -111,6 +113,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (_, state) =>
             BookFormScreen(editBookId: int.parse(state.pathParameters['id']!)),
       ),
+      GoRoute(
+        path: '/requests/:id',
+        builder: (_, state) =>
+            RequestDetailScreen(requestId: int.parse(state.pathParameters['id']!)),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) => _AppShell(navigationShell: navigationShell),
         branches: [
@@ -121,7 +128,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             GoRoute(path: AppRoutes.myShelf, builder: (_, _) => const MyShelfScreen()),
           ]),
           StatefulShellBranch(routes: [
-            GoRoute(path: AppRoutes.requests, builder: (_, _) => const _RequestsPlaceholder()),
+            GoRoute(path: AppRoutes.requests, builder: (_, _) => const RequestsScreen()),
           ]),
           StatefulShellBranch(routes: [
             GoRoute(path: AppRoutes.messages, builder: (_, _) => const _MessagesPlaceholder()),
@@ -153,13 +160,6 @@ class _AppShell extends StatelessWidget {
       ),
     );
   }
-}
-
-class _RequestsPlaceholder extends StatelessWidget {
-  const _RequestsPlaceholder();
-  @override
-  Widget build(BuildContext context) =>
-      const Scaffold(body: Center(child: Text('Borrow requests — coming in step 5')));
 }
 
 class _MessagesPlaceholder extends StatelessWidget {

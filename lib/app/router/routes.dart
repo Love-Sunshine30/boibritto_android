@@ -14,4 +14,6 @@ abstract class AppRoutes {
   static const myShelf = '/my-shelf';
   static const requests = '/requests';
   static const messages = '/messages';
+
+  static String requestDetail(int id) => '/requests/$id';
 }

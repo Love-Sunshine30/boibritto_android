@@ -57,4 +57,12 @@ class BooksLocalDataSource {
   Future<void> remove(int id) {
     return (_db.delete(_db.books)..where((t) => t.id.equals(id))).go();
   }
+
+    /// Write-through patch used by RequestsRepository when a handoff confirms
+  /// or a book is returned — updates availability without waiting on a
+  /// refetch (architecture §8).
+  Future<void> setAvailability(int bookId, bool available) {
+    return (_db.update(_db.books)..where((t) => t.id.equals(bookId)))
+        .write(BooksCompanion(available: Value(available)));
+  }
 }
