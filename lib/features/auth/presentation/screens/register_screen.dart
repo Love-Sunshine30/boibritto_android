@@ -1,37 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
-import '../../../../app/router/routes.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../application/auth_controller.dart';
 
-class LoginScreen extends ConsumerStatefulWidget {
-  const LoginScreen({super.key});
+class RegisterScreen extends ConsumerStatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends ConsumerState<LoginScreen> {
+class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmController = TextEditingController();
+  String? _localError;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmController.dispose();
     super.dispose();
   }
 
   Future<void> _submit() async {
-    final ok = await ref.read(authControllerProvider.notifier).signIn(
+    if (_passwordController.text != _confirmController.text) {
+      setState(() => _localError = "Passwords don't match.");
+      return;
+    }
+    setState(() => _localError = null);
+
+    final ok = await ref.read(authControllerProvider.notifier).register(
           email: _emailController.text.trim(),
           password: _passwordController.text,
         );
-    // On success, app_router.dart's redirect takes over automatically.
+    // TODO(step 3): on success the server JIT-provisions a profile with
+    // whatsapp_number == null; once features/profile exists, the router
+    // redirect should send fresh registrations to /complete-profile
+    // instead of straight to /books.
     if (!ok && mounted) {
       final message = ref.read(authControllerProvider).errorMessage;
       if (message != null) {
@@ -45,6 +55,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final state = ref.watch(authControllerProvider);
 
     return Scaffold(
+      appBar: AppBar(title: const Text('Create account')),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.lg),
@@ -55,8 +66,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text('Welcome back', style: Theme.of(context).textTheme.titleLarge),
-                  const SizedBox(height: AppSpacing.xl),
                   AppTextField(
                     label: 'Email',
                     controller: _emailController,
@@ -68,28 +77,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     label: 'Password',
                     controller: _passwordController,
                     obscureText: true,
-                    autofillHints: const [AutofillHints.password],
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () => context.push(AppRoutes.forgotPassword),
-                      child: const Text('Forgot password?'),
-                    ),
+                    autofillHints: const [AutofillHints.newPassword],
                   ),
                   const SizedBox(height: AppSpacing.md),
-                  AppButton(label: 'Sign in', loading: state.submitting, onPressed: _submit),
+                  AppTextField(
+                    label: 'Confirm password',
+                    controller: _confirmController,
+                    obscureText: true,
+                    errorText: _localError,
+                  ),
                   const SizedBox(height: AppSpacing.lg),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text("Don't have an account?"),
-                      TextButton(
-                        onPressed: () => context.push(AppRoutes.register),
-                        child: const Text('Register'),
-                      ),
-                    ],
+                  AppButton(
+                    label: 'Create account',
+                    loading: state.submitting,
+                    onPressed: _submit,
                   ),
                 ],
               ),

@@ -1,26 +1,21 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'app/router.dart';
-import 'app/theme/theme.dart';
 
-void main() {
-  runApp(
-    const ProviderScope(
-      child: BoibrittoApp(),
-    ),
+import 'app/app.dart';
+import 'firebase_options.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  debugPrint('[firebase] project=${Firebase.app().options.projectId}');
+
+  // Temporary diagnostic: remove once the spinner issue is solved.
+  FirebaseAuth.instance.authStateChanges().listen(
+    (u) => debugPrint('[raw auth] user=${u?.uid}'),
+    onError: (e) => debugPrint('[raw auth] error=$e'),
   );
-}
 
-class BoibrittoApp extends StatelessWidget {
-  const BoibrittoApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Boibritto',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
-      routerConfig: router,
-    );
-  }
+  runApp(const ProviderScope(child: BoibrittoApp()));
 }
