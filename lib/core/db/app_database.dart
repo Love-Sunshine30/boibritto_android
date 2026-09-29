@@ -5,21 +5,28 @@ import 'package:drift/native.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
+import 'tables/books_table.dart';
+
 part 'app_database.g.dart';
 
-/// Drift database shell — no tables yet. Each feature adds its own table(s)
-/// here as it's built (BooksTable in step 4, RequestsTable in step 5,
-/// ThreadsTable in step 7, ProfileTable in step 3), per the build-out order
-/// in architecture §14. Bump [schemaVersion] and add a migration whenever a
-/// table is added.
-@DriftDatabase(tables: [])
+@DriftDatabase(tables: [Books])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+        onCreate: (m) => m.createAll(),
+        onUpgrade: (m, from, to) async {
+          if (from < 2) {
+            await m.createTable(books);
+          }
+        },
+      );
 
   static QueryExecutor _openConnection() {
     return LazyDatabase(() async {

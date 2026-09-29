@@ -220,7 +220,7 @@ return $default(_that.user,_that.books,_that.recentActivity);case _:
 @JsonSerializable()
 
 class _PublicProfile implements PublicProfile {
-  const _PublicProfile({required this.user, required  List<UserBookSummary> books, @JsonKey(name: 'recent_activity') required  List<ActivityItem> recentActivity}): _books = books,_recentActivity = recentActivity;
+  const _PublicProfile({required this.user, required  List<UserBookSummary> books, @JsonKey(name: 'recent_activity') required List<ActivityItem> recentActivity}): _books = books,_recentActivity = recentActivity;
   factory _PublicProfile.fromJson(Map<String, dynamic> json) => _$PublicProfileFromJson(json);
 
 @override final  PublicUser user;

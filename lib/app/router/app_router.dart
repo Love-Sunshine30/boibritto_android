@@ -9,15 +9,15 @@ import '../../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/screens/splash_screen.dart';
+import '../../features/books/presentation/screens/book_detail_screen.dart';
+import '../../features/books/presentation/screens/book_feed_screen.dart';
+import '../../features/books/presentation/screens/book_form_screen.dart';
+import '../../features/books/presentation/screens/my_shelf_screen.dart';
 import '../../features/profile/application/own_profile_controller.dart';
 import '../../features/profile/data/models/own_profile.dart';
 import '../../features/profile/presentation/screens/my_profile_screen.dart';
 import 'routes.dart';
 
-/// Holds the latest auth state + own-profile fetch result and tells
-/// go_router to re-run `redirect` whenever either changes. Both are fed by
-/// a single `ref.listen` each below, so there's exactly one subscription
-/// to each underlying stream/provider.
 class AppRefreshNotifier extends ChangeNotifier {
   AuthState authState = const AuthUnknown();
   AsyncValue<OwnProfile>? profileAsync;
@@ -43,9 +43,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     fireImmediately: true,
   );
 
-  // Watching this unconditionally is fine — OwnProfileController.build()
-  // itself waits for AuthAuthenticated before hitting the network, so this
-  // never fires GET /me while signed out.
   ref.listen<AsyncValue<OwnProfile>>(
     ownProfileControllerProvider,
     (_, next) => notifier.updateProfile(next),
@@ -70,24 +67,22 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         case AuthUnauthenticated():
           return onAuthScreen ? null : AppRoutes.login;
 
-          case AuthAuthenticated():
+        case AuthAuthenticated():
           final profileAsync = notifier.profileAsync;
-          final profile = profileAsync?.when(
+          final profile = profileAsync == null
+              ? null
+              : profileAsync.when(
                   data: (value) => value,
                   loading: () => null,
-                  error: (_, _) => null,
+                  error: (_, __) => null,
                 );
-          // Profile fetch still in flight — wait rather than flashing
-          // /books and immediately bouncing to /complete-profile.
           if (profile == null) return null;
 
           final needsCompletion = profile.user.whatsappNumber == null;
           final onCompleteProfile = loc == AppRoutes.completeProfile;
 
           if (needsCompletion) {
-            // TODO(step 4): also force this for /books/new and forum
-            // "post" once those routes exist (architecture §4).
-            if (loc == AppRoutes.splash || onAuthScreen) {
+            if (loc == AppRoutes.splash || onAuthScreen || loc == AppRoutes.newBook) {
               return AppRoutes.completeProfile;
             }
             return null; // browsing elsewhere is allowed while incomplete
@@ -105,29 +100,71 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(path: AppRoutes.forgotPassword, builder: (_, _) => const ForgotPasswordScreen()),
       GoRoute(path: AppRoutes.completeProfile, builder: (_, _) => const CompleteProfileScreen()),
       GoRoute(path: AppRoutes.myProfile, builder: (_, _) => const MyProfileScreen()),
-      // TODO(step 4): replace with the real StatefulShellRoute.indexedStack
-      // bottom-nav (Feed · My Shelf · Requests · Messages) — architecture §4.
-      GoRoute(path: AppRoutes.books, builder: (_, _) => const _BooksPlaceholder()),
+      GoRoute(path: AppRoutes.newBook, builder: (_, _) => const BookFormScreen()),
+      GoRoute(
+        path: '/books/:id',
+        builder: (_, state) =>
+            BookDetailScreen(bookId: int.parse(state.pathParameters['id']!)),
+      ),
+      GoRoute(
+        path: '/books/:id/edit',
+        builder: (_, state) =>
+            BookFormScreen(editBookId: int.parse(state.pathParameters['id']!)),
+      ),
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) => _AppShell(navigationShell: navigationShell),
+        branches: [
+          StatefulShellBranch(routes: [
+            GoRoute(path: AppRoutes.books, builder: (_, _) => const BookFeedScreen()),
+          ]),
+          StatefulShellBranch(routes: [
+            GoRoute(path: AppRoutes.myShelf, builder: (_, _) => const MyShelfScreen()),
+          ]),
+          StatefulShellBranch(routes: [
+            GoRoute(path: AppRoutes.requests, builder: (_, _) => const _RequestsPlaceholder()),
+          ]),
+          StatefulShellBranch(routes: [
+            GoRoute(path: AppRoutes.messages, builder: (_, _) => const _MessagesPlaceholder()),
+          ]),
+        ],
+      ),
     ],
   );
 });
 
-class _BooksPlaceholder extends StatelessWidget {
-  const _BooksPlaceholder();
+class _AppShell extends StatelessWidget {
+  const _AppShell({required this.navigationShell});
+  final StatefulNavigationShell navigationShell;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Boibritto'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.person_outline),
-            onPressed: () => context.push(AppRoutes.myProfile),
-          ),
+      body: navigationShell,
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: navigationShell.currentIndex,
+        onDestinationSelected: (index) =>
+            navigationShell.goBranch(index, initialLocation: index == navigationShell.currentIndex),
+        destinations: const [
+          NavigationDestination(icon: Icon(Icons.menu_book_outlined), label: 'Feed'),
+          NavigationDestination(icon: Icon(Icons.collections_bookmark_outlined), label: 'My Shelf'),
+          NavigationDestination(icon: Icon(Icons.swap_horiz), label: 'Requests'),
+          NavigationDestination(icon: Icon(Icons.chat_bubble_outline), label: 'Messages'),
         ],
       ),
-      body: const Center(child: Text('Feed goes here (step 4)')),
     );
   }
+}
+
+class _RequestsPlaceholder extends StatelessWidget {
+  const _RequestsPlaceholder();
+  @override
+  Widget build(BuildContext context) =>
+      const Scaffold(body: Center(child: Text('Borrow requests — coming in step 5')));
+}
+
+class _MessagesPlaceholder extends StatelessWidget {
+  const _MessagesPlaceholder();
+  @override
+  Widget build(BuildContext context) =>
+      const Scaffold(body: Center(child: Text('Messages — coming in step 7')));
 }

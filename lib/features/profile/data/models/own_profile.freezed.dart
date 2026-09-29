@@ -220,7 +220,7 @@ return $default(_that.user,_that.books,_that.recentActivity);case _:
 @JsonSerializable()
 
 class _OwnProfile implements OwnProfile {
-  const _OwnProfile({required this.user, required  List<UserBookSummary> books, @JsonKey(name: 'recent_activity') required  List<ActivityItem> recentActivity}): _books = books,_recentActivity = recentActivity;
+  const _OwnProfile({required this.user, required  List<UserBookSummary> books, @JsonKey(name: 'recent_activity') required List<ActivityItem> recentActivity}): _books = books,_recentActivity = recentActivity;
   factory _OwnProfile.fromJson(Map<String, dynamic> json) => _$OwnProfileFromJson(json);
 
 @override final  User user;
