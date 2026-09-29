@@ -7,25 +7,20 @@ import 'api_exception.dart';
 sealed class Failure {
   const Failure();
 
-  /// Maps a caught error (typically an [ApiException] thrown by
-  /// `ErrorInterceptor`, or a raw [DioException] for connectivity issues)
-  /// into a [Failure]. Repositories call this instead of re-implementing the
-  /// same switch — see architecture §12's "small mapping function in each
-  /// repository", centralized here to avoid duplicating the code/message
-  /// table per feature.
+  /// Maps a caught error into a [Failure]. Handles three shapes: a raw
+  /// [ApiException] (if something throws one directly), a [DioException]
+  /// whose `.error` was set to an [ApiException] by `ErrorInterceptor`
+  /// (the normal case for every API call), and a [DioException] with no
+  /// `.error` set (connectivity/timeout, never reached the server).
   factory Failure.from(Object error) {
     if (error is ApiException) {
-      return switch (error.code) {
-        ApiErrorCode.validationFailed => ValidationFailure(error.message),
-        ApiErrorCode.unauthorized => const AuthFailure(),
-        ApiErrorCode.forbidden => const ForbiddenFailure(),
-        ApiErrorCode.notFound => const NotFoundFailure(),
-        ApiErrorCode.conflict => ConflictFailure(error.message),
-        ApiErrorCode.internalError => const ServerFailure(),
-        _ => const UnknownFailure(),
-      };
+      return _fromApiException(error);
     }
     if (error is DioException) {
+      final inner = error.error;
+      if (inner is ApiException) {
+        return _fromApiException(inner);
+      }
       switch (error.type) {
         case DioExceptionType.connectionError:
         case DioExceptionType.connectionTimeout:
@@ -38,6 +33,18 @@ sealed class Failure {
     }
     return const UnknownFailure();
   }
+}
+
+Failure _fromApiException(ApiException error) {
+  return switch (error.code) {
+    ApiErrorCode.validationFailed => ValidationFailure(error.message),
+    ApiErrorCode.unauthorized => const AuthFailure(),
+    ApiErrorCode.forbidden => const ForbiddenFailure(),
+    ApiErrorCode.notFound => const NotFoundFailure(),
+    ApiErrorCode.conflict => ConflictFailure(error.message),
+    ApiErrorCode.internalError => const ServerFailure(),
+    _ => const UnknownFailure(),
+  };
 }
 
 /// No connectivity / timeout.

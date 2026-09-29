@@ -5,27 +5,32 @@
 abstract class ApiEndpoints {
   // Profile
   static const me = '/me';
-  static String user(String id) => '/users/$id';
+  static String user(int id) => '/users/$id';
 
   // Books
   static const books = '/books';
-  static String book(String id) => '/books/$id';
-  static String bookRequests(String id) => '/books/$id/requests';
-  static String bookForum(String id) => '/books/$id/forum';
+  static String book(int id) => '/books/$id';
+  static String bookRequests(int id) => '/books/$id/requests';
+  static String bookForum(int id) => '/books/$id/forum';
 
   // Requests
-  static String request(String id) => '/requests/$id';
-  static String requestConfirm(String id) => '/requests/$id/confirm';
-  static String requestReturn(String id) => '/requests/$id/return';
+  static const requestsSent = '/requests/sent';
+  static const requestsIncoming = '/requests/incoming';
+  static String request(int id) => '/requests/$id';
+  static String requestConfirm(int id) => '/requests/$id/confirm';
+  static String requestReturn(int id) => '/requests/$id/return';
 
   // Messages
   static const threads = '/threads';
-  static String threadMessages(String id) => '/threads/$id/messages';
+  static String threadMessages(int id) => '/threads/$id/messages';
 
   // Push
   static const pushSubscribe = '/push/subscribe';
   static const pushUnsubscribe = '/push/unsubscribe';
 
+  // Forum
+  static String forumPost(int id) => '/forum/$id';
+
   // Admin
-  static String adminBookCover(String id) => '/admin/books/$id/cover';
+  static String adminBookCover(int id) => '/admin/books/$id/cover';
 }
