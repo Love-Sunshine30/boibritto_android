@@ -2,11 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/auth/firebase_auth_service.dart';
 import '../../../core/providers/firebase_providers.dart';
+import '../../push/application/push_registration_controller.dart';
 
-/// Submission state for the sign-in/register/forgot-password forms. Field
-/// values live in each screen's own TextEditingControllers — this only
-/// tracks the async result of the submit action, per architecture §6's
-/// "submitting: bool / submitError: Failure?" pattern.
 class AuthActionState {
   const AuthActionState({this.submitting = false, this.errorMessage});
 
@@ -16,7 +13,7 @@ class AuthActionState {
   AuthActionState copyWith({bool? submitting, String? errorMessage}) {
     return AuthActionState(
       submitting: submitting ?? this.submitting,
-      errorMessage: errorMessage, // explicit null clears the previous error
+      errorMessage: errorMessage,
     );
   }
 }
@@ -39,7 +36,12 @@ class AuthController extends Notifier<AuthActionState> {
     return _run(() => _service.sendPasswordResetEmail(email));
   }
 
-  Future<void> signOut() => _service.signOut();
+  Future<void> signOut() async {
+    // Must happen while still authenticated — unsubscribe needs a valid ID
+    // token to call the backend (architecture §10).
+    await ref.read(pushRegistrationControllerProvider).unregister();
+    await _service.signOut();
+  }
 
   Future<bool> _run(Future<void> Function() action) async {
     state = state.copyWith(submitting: true, errorMessage: null);

@@ -16,4 +16,8 @@ abstract class AppRoutes {
   static const messages = '/messages';
 
   static String requestDetail(int id) => '/requests/$id';
+
+  static String threadDetail(int requestId) => '/messages/$requestId';
+
+  static String bookForum(int id) => '/books/$id/forum';
 }

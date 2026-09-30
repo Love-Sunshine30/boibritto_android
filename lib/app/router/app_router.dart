@@ -13,11 +13,14 @@ import '../../features/books/presentation/screens/book_detail_screen.dart';
 import '../../features/books/presentation/screens/book_feed_screen.dart';
 import '../../features/books/presentation/screens/book_form_screen.dart';
 import '../../features/books/presentation/screens/my_shelf_screen.dart';
+import '../../features/messages/presentation/screens/thread_detail_screen.dart';
+import '../../features/messages/presentation/screens/thread_list_screen.dart';
 import '../../features/profile/application/own_profile_controller.dart';
 import '../../features/profile/data/models/own_profile.dart';
 import '../../features/profile/presentation/screens/my_profile_screen.dart';
 import '../../features/requests/presentation/screens/request_detail_screen.dart';
 import '../../features/requests/presentation/screens/requests_screen.dart';
+import '../../features/forum/presentation/screens/book_forum_screen.dart';
 import 'routes.dart';
 
 class AppRefreshNotifier extends ChangeNotifier {
@@ -114,9 +117,19 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             BookFormScreen(editBookId: int.parse(state.pathParameters['id']!)),
       ),
       GoRoute(
+        path: '/books/:id/forum',
+        builder: (_, state) =>
+            BookForumScreen(bookId: int.parse(state.pathParameters['id']!)),
+      ),
+      GoRoute(
         path: '/requests/:id',
         builder: (_, state) =>
             RequestDetailScreen(requestId: int.parse(state.pathParameters['id']!)),
+      ),
+      GoRoute(
+        path: '/messages/:id',
+        builder: (_, state) =>
+            ThreadDetailScreen(requestId: int.parse(state.pathParameters['id']!)),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) => _AppShell(navigationShell: navigationShell),
@@ -131,7 +144,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             GoRoute(path: AppRoutes.requests, builder: (_, _) => const RequestsScreen()),
           ]),
           StatefulShellBranch(routes: [
-            GoRoute(path: AppRoutes.messages, builder: (_, _) => const _MessagesPlaceholder()),
+            GoRoute(path: AppRoutes.messages, builder: (_, _) => const ThreadListScreen()),
           ]),
         ],
       ),
@@ -160,11 +173,4 @@ class _AppShell extends StatelessWidget {
       ),
     );
   }
-}
-
-class _MessagesPlaceholder extends StatelessWidget {
-  const _MessagesPlaceholder();
-  @override
-  Widget build(BuildContext context) =>
-      const Scaffold(body: Center(child: Text('Messages — coming in step 7')));
 }

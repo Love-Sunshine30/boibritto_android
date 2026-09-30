@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../app/router/routes.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/status_pill.dart';
@@ -17,10 +19,9 @@ class RequestDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final requestAsync = ref.watch(requestDetailControllerProvider(requestId));
-    final myId = ref.watch(ownProfileControllerProvider).when(
+    final myId = ref.watch(ownProfileControllerProvider).maybeWhen(
       data: (profile) => profile.user.id,
-      loading: () => null,
-      error: (err, stack) => null,
+      orElse: () => null,
     );
     final actionState = ref.watch(requestActionControllerProvider);
 
@@ -32,6 +33,8 @@ class RequestDetailScreen extends ConsumerWidget {
         data: (request) {
           final isOwner = myId != null && myId == request.ownerId;
           final isRequester = myId != null && myId == request.requesterId;
+          final canMessage =
+              request.status != RequestStatus.pending && request.status != RequestStatus.rejected;
 
           return Padding(
             padding: const EdgeInsets.all(AppSpacing.lg),
@@ -51,6 +54,14 @@ class RequestDetailScreen extends ConsumerWidget {
                 if (request.message.isNotEmpty) ...[
                   const SizedBox(height: AppSpacing.md),
                   Text(request.message, style: Theme.of(context).textTheme.bodyMedium),
+                ],
+                if (canMessage) ...[
+                  const SizedBox(height: AppSpacing.md),
+                  OutlinedButton.icon(
+                    icon: const Icon(Icons.chat_bubble_outline),
+                    label: Text(isOwner ? 'Message ${request.requesterName}' : 'Message owner'),
+                    onPressed: () => context.push(AppRoutes.threadDetail(request.id)),
+                  ),
                 ],
                 const SizedBox(height: AppSpacing.xl),
                 _ActionArea(
@@ -99,7 +110,6 @@ class _ActionArea extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final notifier = ref.read(requestActionControllerProvider.notifier);
 
-    // Exactly one actionable button at a time — architecture §11.5–§11.7.
     if (request.status == RequestStatus.pending && isOwner) {
       return Row(
         children: [

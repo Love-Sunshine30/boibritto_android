@@ -1263,16 +1263,850 @@ class RequestsCompanion extends UpdateCompanion<BorrowRequestRow> {
   }
 }
 
+class $ThreadSummariesTable extends ThreadSummaries
+    with TableInfo<$ThreadSummariesTable, ThreadSummaryRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ThreadSummariesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _requestIdMeta = const VerificationMeta(
+    'requestId',
+  );
+  @override
+  late final GeneratedColumn<int> requestId = GeneratedColumn<int>(
+    'request_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _bookTitleMeta = const VerificationMeta(
+    'bookTitle',
+  );
+  @override
+  late final GeneratedColumn<String> bookTitle = GeneratedColumn<String>(
+    'book_title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _otherParticipantNameMeta =
+      const VerificationMeta('otherParticipantName');
+  @override
+  late final GeneratedColumn<String> otherParticipantName =
+      GeneratedColumn<String>(
+        'other_participant_name',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _lastMessagePreviewMeta =
+      const VerificationMeta('lastMessagePreview');
+  @override
+  late final GeneratedColumn<String> lastMessagePreview =
+      GeneratedColumn<String>(
+        'last_message_preview',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _lastMessageAtMeta = const VerificationMeta(
+    'lastMessageAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastMessageAt =
+      GeneratedColumn<DateTime>(
+        'last_message_at',
+        aliasedName,
+        false,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: true,
+      );
+  @override
+  List<GeneratedColumn> get $columns => [
+    requestId,
+    bookTitle,
+    otherParticipantName,
+    lastMessagePreview,
+    lastMessageAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'thread_summaries';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ThreadSummaryRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('request_id')) {
+      context.handle(
+        _requestIdMeta,
+        requestId.isAcceptableOrUnknown(data['request_id']!, _requestIdMeta),
+      );
+    }
+    if (data.containsKey('book_title')) {
+      context.handle(
+        _bookTitleMeta,
+        bookTitle.isAcceptableOrUnknown(data['book_title']!, _bookTitleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_bookTitleMeta);
+    }
+    if (data.containsKey('other_participant_name')) {
+      context.handle(
+        _otherParticipantNameMeta,
+        otherParticipantName.isAcceptableOrUnknown(
+          data['other_participant_name']!,
+          _otherParticipantNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_message_preview')) {
+      context.handle(
+        _lastMessagePreviewMeta,
+        lastMessagePreview.isAcceptableOrUnknown(
+          data['last_message_preview']!,
+          _lastMessagePreviewMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_lastMessagePreviewMeta);
+    }
+    if (data.containsKey('last_message_at')) {
+      context.handle(
+        _lastMessageAtMeta,
+        lastMessageAt.isAcceptableOrUnknown(
+          data['last_message_at']!,
+          _lastMessageAtMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_lastMessageAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {requestId};
+  @override
+  ThreadSummaryRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ThreadSummaryRow(
+      requestId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}request_id'],
+      )!,
+      bookTitle: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}book_title'],
+      )!,
+      otherParticipantName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}other_participant_name'],
+      ),
+      lastMessagePreview: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_message_preview'],
+      )!,
+      lastMessageAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_message_at'],
+      )!,
+    );
+  }
+
+  @override
+  $ThreadSummariesTable createAlias(String alias) {
+    return $ThreadSummariesTable(attachedDatabase, alias);
+  }
+}
+
+class ThreadSummaryRow extends DataClass
+    implements Insertable<ThreadSummaryRow> {
+  final int requestId;
+  final String bookTitle;
+  final String? otherParticipantName;
+  final String lastMessagePreview;
+  final DateTime lastMessageAt;
+  const ThreadSummaryRow({
+    required this.requestId,
+    required this.bookTitle,
+    this.otherParticipantName,
+    required this.lastMessagePreview,
+    required this.lastMessageAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['request_id'] = Variable<int>(requestId);
+    map['book_title'] = Variable<String>(bookTitle);
+    if (!nullToAbsent || otherParticipantName != null) {
+      map['other_participant_name'] = Variable<String>(otherParticipantName);
+    }
+    map['last_message_preview'] = Variable<String>(lastMessagePreview);
+    map['last_message_at'] = Variable<DateTime>(lastMessageAt);
+    return map;
+  }
+
+  ThreadSummariesCompanion toCompanion(bool nullToAbsent) {
+    return ThreadSummariesCompanion(
+      requestId: Value(requestId),
+      bookTitle: Value(bookTitle),
+      otherParticipantName: otherParticipantName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(otherParticipantName),
+      lastMessagePreview: Value(lastMessagePreview),
+      lastMessageAt: Value(lastMessageAt),
+    );
+  }
+
+  factory ThreadSummaryRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ThreadSummaryRow(
+      requestId: serializer.fromJson<int>(json['requestId']),
+      bookTitle: serializer.fromJson<String>(json['bookTitle']),
+      otherParticipantName: serializer.fromJson<String?>(
+        json['otherParticipantName'],
+      ),
+      lastMessagePreview: serializer.fromJson<String>(
+        json['lastMessagePreview'],
+      ),
+      lastMessageAt: serializer.fromJson<DateTime>(json['lastMessageAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'requestId': serializer.toJson<int>(requestId),
+      'bookTitle': serializer.toJson<String>(bookTitle),
+      'otherParticipantName': serializer.toJson<String?>(otherParticipantName),
+      'lastMessagePreview': serializer.toJson<String>(lastMessagePreview),
+      'lastMessageAt': serializer.toJson<DateTime>(lastMessageAt),
+    };
+  }
+
+  ThreadSummaryRow copyWith({
+    int? requestId,
+    String? bookTitle,
+    Value<String?> otherParticipantName = const Value.absent(),
+    String? lastMessagePreview,
+    DateTime? lastMessageAt,
+  }) => ThreadSummaryRow(
+    requestId: requestId ?? this.requestId,
+    bookTitle: bookTitle ?? this.bookTitle,
+    otherParticipantName: otherParticipantName.present
+        ? otherParticipantName.value
+        : this.otherParticipantName,
+    lastMessagePreview: lastMessagePreview ?? this.lastMessagePreview,
+    lastMessageAt: lastMessageAt ?? this.lastMessageAt,
+  );
+  ThreadSummaryRow copyWithCompanion(ThreadSummariesCompanion data) {
+    return ThreadSummaryRow(
+      requestId: data.requestId.present ? data.requestId.value : this.requestId,
+      bookTitle: data.bookTitle.present ? data.bookTitle.value : this.bookTitle,
+      otherParticipantName: data.otherParticipantName.present
+          ? data.otherParticipantName.value
+          : this.otherParticipantName,
+      lastMessagePreview: data.lastMessagePreview.present
+          ? data.lastMessagePreview.value
+          : this.lastMessagePreview,
+      lastMessageAt: data.lastMessageAt.present
+          ? data.lastMessageAt.value
+          : this.lastMessageAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ThreadSummaryRow(')
+          ..write('requestId: $requestId, ')
+          ..write('bookTitle: $bookTitle, ')
+          ..write('otherParticipantName: $otherParticipantName, ')
+          ..write('lastMessagePreview: $lastMessagePreview, ')
+          ..write('lastMessageAt: $lastMessageAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    requestId,
+    bookTitle,
+    otherParticipantName,
+    lastMessagePreview,
+    lastMessageAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ThreadSummaryRow &&
+          other.requestId == this.requestId &&
+          other.bookTitle == this.bookTitle &&
+          other.otherParticipantName == this.otherParticipantName &&
+          other.lastMessagePreview == this.lastMessagePreview &&
+          other.lastMessageAt == this.lastMessageAt);
+}
+
+class ThreadSummariesCompanion extends UpdateCompanion<ThreadSummaryRow> {
+  final Value<int> requestId;
+  final Value<String> bookTitle;
+  final Value<String?> otherParticipantName;
+  final Value<String> lastMessagePreview;
+  final Value<DateTime> lastMessageAt;
+  const ThreadSummariesCompanion({
+    this.requestId = const Value.absent(),
+    this.bookTitle = const Value.absent(),
+    this.otherParticipantName = const Value.absent(),
+    this.lastMessagePreview = const Value.absent(),
+    this.lastMessageAt = const Value.absent(),
+  });
+  ThreadSummariesCompanion.insert({
+    this.requestId = const Value.absent(),
+    required String bookTitle,
+    this.otherParticipantName = const Value.absent(),
+    required String lastMessagePreview,
+    required DateTime lastMessageAt,
+  }) : bookTitle = Value(bookTitle),
+       lastMessagePreview = Value(lastMessagePreview),
+       lastMessageAt = Value(lastMessageAt);
+  static Insertable<ThreadSummaryRow> custom({
+    Expression<int>? requestId,
+    Expression<String>? bookTitle,
+    Expression<String>? otherParticipantName,
+    Expression<String>? lastMessagePreview,
+    Expression<DateTime>? lastMessageAt,
+  }) {
+    return RawValuesInsertable({
+      if (requestId != null) 'request_id': requestId,
+      if (bookTitle != null) 'book_title': bookTitle,
+      if (otherParticipantName != null)
+        'other_participant_name': otherParticipantName,
+      if (lastMessagePreview != null)
+        'last_message_preview': lastMessagePreview,
+      if (lastMessageAt != null) 'last_message_at': lastMessageAt,
+    });
+  }
+
+  ThreadSummariesCompanion copyWith({
+    Value<int>? requestId,
+    Value<String>? bookTitle,
+    Value<String?>? otherParticipantName,
+    Value<String>? lastMessagePreview,
+    Value<DateTime>? lastMessageAt,
+  }) {
+    return ThreadSummariesCompanion(
+      requestId: requestId ?? this.requestId,
+      bookTitle: bookTitle ?? this.bookTitle,
+      otherParticipantName: otherParticipantName ?? this.otherParticipantName,
+      lastMessagePreview: lastMessagePreview ?? this.lastMessagePreview,
+      lastMessageAt: lastMessageAt ?? this.lastMessageAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (requestId.present) {
+      map['request_id'] = Variable<int>(requestId.value);
+    }
+    if (bookTitle.present) {
+      map['book_title'] = Variable<String>(bookTitle.value);
+    }
+    if (otherParticipantName.present) {
+      map['other_participant_name'] = Variable<String>(
+        otherParticipantName.value,
+      );
+    }
+    if (lastMessagePreview.present) {
+      map['last_message_preview'] = Variable<String>(lastMessagePreview.value);
+    }
+    if (lastMessageAt.present) {
+      map['last_message_at'] = Variable<DateTime>(lastMessageAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ThreadSummariesCompanion(')
+          ..write('requestId: $requestId, ')
+          ..write('bookTitle: $bookTitle, ')
+          ..write('otherParticipantName: $otherParticipantName, ')
+          ..write('lastMessagePreview: $lastMessagePreview, ')
+          ..write('lastMessageAt: $lastMessageAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ForumPostsTable extends ForumPosts
+    with TableInfo<$ForumPostsTable, ForumPostRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ForumPostsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _bookIdMeta = const VerificationMeta('bookId');
+  @override
+  late final GeneratedColumn<int> bookId = GeneratedColumn<int>(
+    'book_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<int> userId = GeneratedColumn<int>(
+    'user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _userNameMeta = const VerificationMeta(
+    'userName',
+  );
+  @override
+  late final GeneratedColumn<String> userName = GeneratedColumn<String>(
+    'user_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _bodyMeta = const VerificationMeta('body');
+  @override
+  late final GeneratedColumn<String> body = GeneratedColumn<String>(
+    'body',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _editedMeta = const VerificationMeta('edited');
+  @override
+  late final GeneratedColumn<bool> edited = GeneratedColumn<bool>(
+    'edited',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("edited" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    bookId,
+    userId,
+    userName,
+    body,
+    edited,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'forum_posts';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ForumPostRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('book_id')) {
+      context.handle(
+        _bookIdMeta,
+        bookId.isAcceptableOrUnknown(data['book_id']!, _bookIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_bookIdMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('user_name')) {
+      context.handle(
+        _userNameMeta,
+        userName.isAcceptableOrUnknown(data['user_name']!, _userNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userNameMeta);
+    }
+    if (data.containsKey('body')) {
+      context.handle(
+        _bodyMeta,
+        body.isAcceptableOrUnknown(data['body']!, _bodyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_bodyMeta);
+    }
+    if (data.containsKey('edited')) {
+      context.handle(
+        _editedMeta,
+        edited.isAcceptableOrUnknown(data['edited']!, _editedMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_editedMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ForumPostRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ForumPostRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      bookId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}book_id'],
+      )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}user_id'],
+      )!,
+      userName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_name'],
+      )!,
+      body: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}body'],
+      )!,
+      edited: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}edited'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $ForumPostsTable createAlias(String alias) {
+    return $ForumPostsTable(attachedDatabase, alias);
+  }
+}
+
+class ForumPostRow extends DataClass implements Insertable<ForumPostRow> {
+  final int id;
+  final int bookId;
+  final int userId;
+  final String userName;
+  final String body;
+  final bool edited;
+  final DateTime createdAt;
+  const ForumPostRow({
+    required this.id,
+    required this.bookId,
+    required this.userId,
+    required this.userName,
+    required this.body,
+    required this.edited,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['book_id'] = Variable<int>(bookId);
+    map['user_id'] = Variable<int>(userId);
+    map['user_name'] = Variable<String>(userName);
+    map['body'] = Variable<String>(body);
+    map['edited'] = Variable<bool>(edited);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  ForumPostsCompanion toCompanion(bool nullToAbsent) {
+    return ForumPostsCompanion(
+      id: Value(id),
+      bookId: Value(bookId),
+      userId: Value(userId),
+      userName: Value(userName),
+      body: Value(body),
+      edited: Value(edited),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory ForumPostRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ForumPostRow(
+      id: serializer.fromJson<int>(json['id']),
+      bookId: serializer.fromJson<int>(json['bookId']),
+      userId: serializer.fromJson<int>(json['userId']),
+      userName: serializer.fromJson<String>(json['userName']),
+      body: serializer.fromJson<String>(json['body']),
+      edited: serializer.fromJson<bool>(json['edited']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'bookId': serializer.toJson<int>(bookId),
+      'userId': serializer.toJson<int>(userId),
+      'userName': serializer.toJson<String>(userName),
+      'body': serializer.toJson<String>(body),
+      'edited': serializer.toJson<bool>(edited),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  ForumPostRow copyWith({
+    int? id,
+    int? bookId,
+    int? userId,
+    String? userName,
+    String? body,
+    bool? edited,
+    DateTime? createdAt,
+  }) => ForumPostRow(
+    id: id ?? this.id,
+    bookId: bookId ?? this.bookId,
+    userId: userId ?? this.userId,
+    userName: userName ?? this.userName,
+    body: body ?? this.body,
+    edited: edited ?? this.edited,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  ForumPostRow copyWithCompanion(ForumPostsCompanion data) {
+    return ForumPostRow(
+      id: data.id.present ? data.id.value : this.id,
+      bookId: data.bookId.present ? data.bookId.value : this.bookId,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      userName: data.userName.present ? data.userName.value : this.userName,
+      body: data.body.present ? data.body.value : this.body,
+      edited: data.edited.present ? data.edited.value : this.edited,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ForumPostRow(')
+          ..write('id: $id, ')
+          ..write('bookId: $bookId, ')
+          ..write('userId: $userId, ')
+          ..write('userName: $userName, ')
+          ..write('body: $body, ')
+          ..write('edited: $edited, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, bookId, userId, userName, body, edited, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ForumPostRow &&
+          other.id == this.id &&
+          other.bookId == this.bookId &&
+          other.userId == this.userId &&
+          other.userName == this.userName &&
+          other.body == this.body &&
+          other.edited == this.edited &&
+          other.createdAt == this.createdAt);
+}
+
+class ForumPostsCompanion extends UpdateCompanion<ForumPostRow> {
+  final Value<int> id;
+  final Value<int> bookId;
+  final Value<int> userId;
+  final Value<String> userName;
+  final Value<String> body;
+  final Value<bool> edited;
+  final Value<DateTime> createdAt;
+  const ForumPostsCompanion({
+    this.id = const Value.absent(),
+    this.bookId = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.userName = const Value.absent(),
+    this.body = const Value.absent(),
+    this.edited = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  });
+  ForumPostsCompanion.insert({
+    this.id = const Value.absent(),
+    required int bookId,
+    required int userId,
+    required String userName,
+    required String body,
+    required bool edited,
+    required DateTime createdAt,
+  }) : bookId = Value(bookId),
+       userId = Value(userId),
+       userName = Value(userName),
+       body = Value(body),
+       edited = Value(edited),
+       createdAt = Value(createdAt);
+  static Insertable<ForumPostRow> custom({
+    Expression<int>? id,
+    Expression<int>? bookId,
+    Expression<int>? userId,
+    Expression<String>? userName,
+    Expression<String>? body,
+    Expression<bool>? edited,
+    Expression<DateTime>? createdAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (bookId != null) 'book_id': bookId,
+      if (userId != null) 'user_id': userId,
+      if (userName != null) 'user_name': userName,
+      if (body != null) 'body': body,
+      if (edited != null) 'edited': edited,
+      if (createdAt != null) 'created_at': createdAt,
+    });
+  }
+
+  ForumPostsCompanion copyWith({
+    Value<int>? id,
+    Value<int>? bookId,
+    Value<int>? userId,
+    Value<String>? userName,
+    Value<String>? body,
+    Value<bool>? edited,
+    Value<DateTime>? createdAt,
+  }) {
+    return ForumPostsCompanion(
+      id: id ?? this.id,
+      bookId: bookId ?? this.bookId,
+      userId: userId ?? this.userId,
+      userName: userName ?? this.userName,
+      body: body ?? this.body,
+      edited: edited ?? this.edited,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (bookId.present) {
+      map['book_id'] = Variable<int>(bookId.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<int>(userId.value);
+    }
+    if (userName.present) {
+      map['user_name'] = Variable<String>(userName.value);
+    }
+    if (body.present) {
+      map['body'] = Variable<String>(body.value);
+    }
+    if (edited.present) {
+      map['edited'] = Variable<bool>(edited.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ForumPostsCompanion(')
+          ..write('id: $id, ')
+          ..write('bookId: $bookId, ')
+          ..write('userId: $userId, ')
+          ..write('userName: $userName, ')
+          ..write('body: $body, ')
+          ..write('edited: $edited, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $BooksTable books = $BooksTable(this);
   late final $RequestsTable requests = $RequestsTable(this);
+  late final $ThreadSummariesTable threadSummaries = $ThreadSummariesTable(
+    this,
+  );
+  late final $ForumPostsTable forumPosts = $ForumPostsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [books, requests];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+    books,
+    requests,
+    threadSummaries,
+    forumPosts,
+  ];
 }
 
 typedef $$BooksTableCreateCompanionBuilder =
@@ -1875,6 +2709,444 @@ typedef $$RequestsTableProcessedTableManager =
       BorrowRequestRow,
       PrefetchHooks Function()
     >;
+typedef $$ThreadSummariesTableCreateCompanionBuilder =
+    ThreadSummariesCompanion Function({
+      Value<int> requestId,
+      required String bookTitle,
+      Value<String?> otherParticipantName,
+      required String lastMessagePreview,
+      required DateTime lastMessageAt,
+    });
+typedef $$ThreadSummariesTableUpdateCompanionBuilder =
+    ThreadSummariesCompanion Function({
+      Value<int> requestId,
+      Value<String> bookTitle,
+      Value<String?> otherParticipantName,
+      Value<String> lastMessagePreview,
+      Value<DateTime> lastMessageAt,
+    });
+
+class $$ThreadSummariesTableFilterComposer
+    extends Composer<_$AppDatabase, $ThreadSummariesTable> {
+  $$ThreadSummariesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get requestId => $composableBuilder(
+    column: $table.requestId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get bookTitle => $composableBuilder(
+    column: $table.bookTitle,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get otherParticipantName => $composableBuilder(
+    column: $table.otherParticipantName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastMessagePreview => $composableBuilder(
+    column: $table.lastMessagePreview,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastMessageAt => $composableBuilder(
+    column: $table.lastMessageAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ThreadSummariesTableOrderingComposer
+    extends Composer<_$AppDatabase, $ThreadSummariesTable> {
+  $$ThreadSummariesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get requestId => $composableBuilder(
+    column: $table.requestId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get bookTitle => $composableBuilder(
+    column: $table.bookTitle,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get otherParticipantName => $composableBuilder(
+    column: $table.otherParticipantName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastMessagePreview => $composableBuilder(
+    column: $table.lastMessagePreview,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastMessageAt => $composableBuilder(
+    column: $table.lastMessageAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ThreadSummariesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ThreadSummariesTable> {
+  $$ThreadSummariesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get requestId =>
+      $composableBuilder(column: $table.requestId, builder: (column) => column);
+
+  GeneratedColumn<String> get bookTitle =>
+      $composableBuilder(column: $table.bookTitle, builder: (column) => column);
+
+  GeneratedColumn<String> get otherParticipantName => $composableBuilder(
+    column: $table.otherParticipantName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastMessagePreview => $composableBuilder(
+    column: $table.lastMessagePreview,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get lastMessageAt => $composableBuilder(
+    column: $table.lastMessageAt,
+    builder: (column) => column,
+  );
+}
+
+class $$ThreadSummariesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ThreadSummariesTable,
+          ThreadSummaryRow,
+          $$ThreadSummariesTableFilterComposer,
+          $$ThreadSummariesTableOrderingComposer,
+          $$ThreadSummariesTableAnnotationComposer,
+          $$ThreadSummariesTableCreateCompanionBuilder,
+          $$ThreadSummariesTableUpdateCompanionBuilder,
+          (
+            ThreadSummaryRow,
+            BaseReferences<
+              _$AppDatabase,
+              $ThreadSummariesTable,
+              ThreadSummaryRow
+            >,
+          ),
+          ThreadSummaryRow,
+          PrefetchHooks Function()
+        > {
+  $$ThreadSummariesTableTableManager(
+    _$AppDatabase db,
+    $ThreadSummariesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ThreadSummariesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ThreadSummariesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ThreadSummariesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> requestId = const Value.absent(),
+                Value<String> bookTitle = const Value.absent(),
+                Value<String?> otherParticipantName = const Value.absent(),
+                Value<String> lastMessagePreview = const Value.absent(),
+                Value<DateTime> lastMessageAt = const Value.absent(),
+              }) => ThreadSummariesCompanion(
+                requestId: requestId,
+                bookTitle: bookTitle,
+                otherParticipantName: otherParticipantName,
+                lastMessagePreview: lastMessagePreview,
+                lastMessageAt: lastMessageAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> requestId = const Value.absent(),
+                required String bookTitle,
+                Value<String?> otherParticipantName = const Value.absent(),
+                required String lastMessagePreview,
+                required DateTime lastMessageAt,
+              }) => ThreadSummariesCompanion.insert(
+                requestId: requestId,
+                bookTitle: bookTitle,
+                otherParticipantName: otherParticipantName,
+                lastMessagePreview: lastMessagePreview,
+                lastMessageAt: lastMessageAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ThreadSummariesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ThreadSummariesTable,
+      ThreadSummaryRow,
+      $$ThreadSummariesTableFilterComposer,
+      $$ThreadSummariesTableOrderingComposer,
+      $$ThreadSummariesTableAnnotationComposer,
+      $$ThreadSummariesTableCreateCompanionBuilder,
+      $$ThreadSummariesTableUpdateCompanionBuilder,
+      (
+        ThreadSummaryRow,
+        BaseReferences<_$AppDatabase, $ThreadSummariesTable, ThreadSummaryRow>,
+      ),
+      ThreadSummaryRow,
+      PrefetchHooks Function()
+    >;
+typedef $$ForumPostsTableCreateCompanionBuilder =
+    ForumPostsCompanion Function({
+      Value<int> id,
+      required int bookId,
+      required int userId,
+      required String userName,
+      required String body,
+      required bool edited,
+      required DateTime createdAt,
+    });
+typedef $$ForumPostsTableUpdateCompanionBuilder =
+    ForumPostsCompanion Function({
+      Value<int> id,
+      Value<int> bookId,
+      Value<int> userId,
+      Value<String> userName,
+      Value<String> body,
+      Value<bool> edited,
+      Value<DateTime> createdAt,
+    });
+
+class $$ForumPostsTableFilterComposer
+    extends Composer<_$AppDatabase, $ForumPostsTable> {
+  $$ForumPostsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get bookId => $composableBuilder(
+    column: $table.bookId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get userName => $composableBuilder(
+    column: $table.userName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get edited => $composableBuilder(
+    column: $table.edited,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ForumPostsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ForumPostsTable> {
+  $$ForumPostsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get bookId => $composableBuilder(
+    column: $table.bookId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get userName => $composableBuilder(
+    column: $table.userName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get edited => $composableBuilder(
+    column: $table.edited,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ForumPostsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ForumPostsTable> {
+  $$ForumPostsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get bookId =>
+      $composableBuilder(column: $table.bookId, builder: (column) => column);
+
+  GeneratedColumn<int> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get userName =>
+      $composableBuilder(column: $table.userName, builder: (column) => column);
+
+  GeneratedColumn<String> get body =>
+      $composableBuilder(column: $table.body, builder: (column) => column);
+
+  GeneratedColumn<bool> get edited =>
+      $composableBuilder(column: $table.edited, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$ForumPostsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ForumPostsTable,
+          ForumPostRow,
+          $$ForumPostsTableFilterComposer,
+          $$ForumPostsTableOrderingComposer,
+          $$ForumPostsTableAnnotationComposer,
+          $$ForumPostsTableCreateCompanionBuilder,
+          $$ForumPostsTableUpdateCompanionBuilder,
+          (
+            ForumPostRow,
+            BaseReferences<_$AppDatabase, $ForumPostsTable, ForumPostRow>,
+          ),
+          ForumPostRow,
+          PrefetchHooks Function()
+        > {
+  $$ForumPostsTableTableManager(_$AppDatabase db, $ForumPostsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ForumPostsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ForumPostsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ForumPostsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> bookId = const Value.absent(),
+                Value<int> userId = const Value.absent(),
+                Value<String> userName = const Value.absent(),
+                Value<String> body = const Value.absent(),
+                Value<bool> edited = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+              }) => ForumPostsCompanion(
+                id: id,
+                bookId: bookId,
+                userId: userId,
+                userName: userName,
+                body: body,
+                edited: edited,
+                createdAt: createdAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int bookId,
+                required int userId,
+                required String userName,
+                required String body,
+                required bool edited,
+                required DateTime createdAt,
+              }) => ForumPostsCompanion.insert(
+                id: id,
+                bookId: bookId,
+                userId: userId,
+                userName: userName,
+                body: body,
+                edited: edited,
+                createdAt: createdAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ForumPostsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ForumPostsTable,
+      ForumPostRow,
+      $$ForumPostsTableFilterComposer,
+      $$ForumPostsTableOrderingComposer,
+      $$ForumPostsTableAnnotationComposer,
+      $$ForumPostsTableCreateCompanionBuilder,
+      $$ForumPostsTableUpdateCompanionBuilder,
+      (
+        ForumPostRow,
+        BaseReferences<_$AppDatabase, $ForumPostsTable, ForumPostRow>,
+      ),
+      ForumPostRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -1883,4 +3155,8 @@ class $AppDatabaseManager {
       $$BooksTableTableManager(_db, _db.books);
   $$RequestsTableTableManager get requests =>
       $$RequestsTableTableManager(_db, _db.requests);
+  $$ThreadSummariesTableTableManager get threadSummaries =>
+      $$ThreadSummariesTableTableManager(_db, _db.threadSummaries);
+  $$ForumPostsTableTableManager get forumPosts =>
+      $$ForumPostsTableTableManager(_db, _db.forumPosts);
 }

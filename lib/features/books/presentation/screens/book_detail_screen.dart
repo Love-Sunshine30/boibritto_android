@@ -93,7 +93,13 @@ class BookDetailScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: AppSpacing.md),
                 Text('Listed by ${book.ownerName}'),
-                const SizedBox(height: AppSpacing.xl),
+                const SizedBox(height: AppSpacing.lg),
+                OutlinedButton.icon(
+                  icon: const Icon(Icons.forum_outlined),
+                  label: const Text('Discussion'),
+                  onPressed: () => context.push(AppRoutes.bookForum(book.id)),
+                ),
+                const SizedBox(height: AppSpacing.md),
                 if (isOwner)
                   OutlinedButton(
                     onPressed: () => context.push(AppRoutes.bookEdit(book.id)),
